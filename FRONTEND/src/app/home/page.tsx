@@ -1,40 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import getProducts from "../api/getProducts";
+import ProductsIncrements from "@/@types/Products";
+import ButtonActive from "@/components/Button";
+
 export default function Home() {
+  const [products, setProducts] = useState<ProductsIncrements[] | []>([]);
+
+  useEffect(() => {
+    const reseponse = getProducts();
+    reseponse.then(async (data) => {
+      return setProducts(data);
+    });
+  }, []);
+
+  if (!products) {
+    return;
+  }
+
   return (
-    <div className="">
-      <div className="overflow-x-auto">
-        <table className="table">
-          {/* head */}
+    <div>
+      <div className="overflow-x-auto flex flex-col items-center justify-center mt-10 px-6">
+        <div className=" flex items-center justify-center w-full">
+          <ButtonActive name="Adicinar produto +" />
+        </div>
+        <table className="table max-w-3xl mt-4">
           <thead>
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Job</th>
-              <th>Favorite Color</th>
+              <td>Produto</td>
+              <td>Descrição</td>
+              <td>Preço</td>
             </tr>
           </thead>
-          <tbody>
-            {/* row 1 */}
-            <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
-              <td>Quality Control Specialist</td>
-              <td>Blue</td>
-            </tr>
-            {/* row 2 */}
-            <tr>
-              <th>2</th>
-              <td>Hart Hagerty</td>
-              <td>Desktop Support Technician</td>
-              <td>Purple</td>
-            </tr>
-            {/* row 3 */}
-            <tr>
-              <th>3</th>
-              <td>Brice Swyre</td>
-              <td>Tax Accountant</td>
-              <td>Red</td>
-            </tr>
-          </tbody>
+          {products.map((item) => {
+            return (
+              <tbody key={item._id}>
+                <tr>
+                  <th>{item.title}</th>
+                  <td>{item.description}</td>
+                  <td>{item.price}</td>
+                </tr>
+              </tbody>
+            );
+          })}
         </table>
       </div>
     </div>

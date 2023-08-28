@@ -1,7 +1,14 @@
 interface Products {
-    title: String,
-    description: String,
-    price: Number
+  title: string,
+  description: string,
+  price: number
 }
 
-export default Products
+interface ProductsIncrements extends Products {
+  _id: number;
+  __v: number;
+
+}
+
+  
+export default ProductsIncrements
