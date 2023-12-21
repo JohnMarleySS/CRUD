@@ -8,8 +8,9 @@ const PORT = process.env.PORT || 3000;
 const server = express();
 
 const corsOptons = {
-  origin: "http://localhost:3000",
-  optionsSuccessStatus: 200,
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
 };
 
 // usar cors e deixar o front-end usar
