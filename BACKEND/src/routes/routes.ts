@@ -9,6 +9,8 @@ const prisma = new PrismaClient();
 // metodo de get, para tdas as datas, pegadno todos os itens do banco de dados
 router.get("/", async (req: Request, res: Response) => {
   const products = await prisma.products.findMany();
+  console.log("Deu GET aqui");
+
   res.status(200).json(products);
 });
 
