@@ -13,7 +13,6 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // post, adiciono no banco de dados, eu tenho um schema de como os dados tem que vir do body
-// após isso fazemos um try catch salvando os dados
 router.post("/", async (req: Request, res: Response) => {
   const { title, description, price } = req.body;
 
@@ -39,11 +38,30 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // rota de delete que recebe um id pelo parametro
-router.delete("/:id", async (req: Request, res: Response) => {});
+router.delete("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const product = await prisma.products.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  res.json(product);
+});
 
 // atualizar com base no id, pegamos o id por parametros, fazer um update da data pelo body,
 
 // options server para devolter o item atualiado
-router.patch("/:id", async (req: Request, res: Response) => {});
+router.put("/:id", async (req: Request, res: Response) => {
+  const { title, description, price } = req.body;
+  const { id } = req.params;
+
+  const product = await prisma.products.update({
+    where: { id: Number(id) },
+    data: { title: title, description: description, price: price },
+  });
+  res.status(200).json(product);
+});
 
 export default router;
