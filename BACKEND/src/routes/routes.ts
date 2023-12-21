@@ -1,87 +1,49 @@
-import express from 'express'
-import mongooseModel from '../model/model'
-import Products from '../model/inteface-model'
+import express, { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
-const router = express.Router()
+const router = express.Router();
 
+// conexão com o prisma
+const prisma = new PrismaClient();
 
 // metodo de get, para tdas as datas, pegadno todos os itens do banco de dados
-router.get('/', async (req: express.Request, res: express.Response) => {
-    try {
-        const data: Products[] = await mongooseModel.find()
-        res.json(data)
-        console.log("Feito Get de todos os items")
-    } catch (error: any){
-        res.status(500).json({ message: error.message })
-    }
-})
+router.get("/", async (req: Request, res: Response) => {
+  const products = await prisma.products.findMany();
+  res.status(200).json(products);
+});
 
 // post, adiciono no banco de dados, eu tenho um schema de como os dados tem que vir do body
-// após isso fazemos um try catch salvando os dados 
-router.post('/', async (req: express.Request, res: express.Response) => {
-    const data = new mongooseModel<Products>({
-        title: req.body.title,
-        description: req.body.description,
-        price: req.body.price
-    })
-    try {
-        const dataToSave = data.save()
-        console.log("Feito Post do items")
-        res.status(200).json(dataToSave)
-    } catch (error: any){
-        res.status(400).json({ message: error.message })
-    }
+// após isso fazemos um try catch salvando os dados
+router.post("/", async (req: Request, res: Response) => {
+  const { title, description, price } = req.body;
 
-})
-
+  const products = await prisma.products.create({
+    data: {
+      title,
+      description,
+      price,
+    },
+  });
+  res.status(200).json(products);
+});
 
 // Rota de get pelo id, precisamos pegar o id recebido por parametros, depois buscamos
-// pelo findById do mongoose, retornando um status 200 e a data
-router.get('/:id', async (req: express.Request, res: express.Response) => {
-    try {
-        const { id } = req.params
-        const data = await mongooseModel.findById(id)
-        console.log("Feito Get do item especifico")
-        res.status(200).json(data)
-    } catch (error: any) {
-        res.status(500).json({ message: error.message })
-        
-    }
-})
+router.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const product = await prisma.products.findMany({
+    where: {
+      id: Number(id),
+    },
+  });
+  res.status(200).json(product);
+});
 
 // rota de delete que recebe um id pelo parametro
-router.delete('/:id', async (req: express.Request, res: express.Response) => {    
-    try {
-        const { id } = req.params;
-        const data = await mongooseModel.findByIdAndDelete(id)
-        console.log('Item deletado')
-        res.status(200).send(`Document deleted: ${data}`)
-
-    } catch (error: any) {
-        res.status(400).json({ message: error.message })
-    }
-
-})
+router.delete("/:id", async (req: Request, res: Response) => {});
 
 // atualizar com base no id, pegamos o id por parametros, fazer um update da data pelo body,
-// fazendo options e retornando o resultado!
 
 // options server para devolter o item atualiado
-router.patch('/:id', async (req: express.Request, res: express.Response) => {    
-    try {
-        const { id } = req.params
-        const updateData = req.body
-        const options = { new: true }
+router.patch("/:id", async (req: Request, res: Response) => {});
 
-        const result = await mongooseModel.findByIdAndUpdate(id, updateData, options)
-
-        console.log("Item atualizado")
-        
-        res.send(result)
-    } catch (error: any) {   
-        res.status(400).json({ message: error.message })
-    }
-})
-
-
-export default router
+export default router;
